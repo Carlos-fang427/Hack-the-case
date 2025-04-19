@@ -5,6 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Say Hi to Scouti!!t</title>
   <style>
+    /* 1. Load a refined serif for labels and question text */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600&display=swap');
+
+/* 2. Apply to all field labels and inline question marks */
+label, .badge-row div {
+  font-family: 'Roboto Slab', serif;
+  font-size: 16px;             /* slightly larger for readability */
+  font-weight: 600;            /* semi‑bold for emphasis */
+  color: #333;                 /* dark charcoal for contrast */
+  text-transform: capitalize;  /* uniform casing */
+  letter-spacing: 0.5px;       /* subtle breathing room */
+}
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+/* Styling for the main title */
+h1 {
+  font-family: 'Fredoka One', cursive;   /* playful, rounded letterforms */
+  font-size: 36px;                      /* bump up size for impact */
+  color: #da251d;                       /* Scotiabank red for brand consistency */
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.2); /* subtle depth behind text */
+  letter-spacing: 1px;                  /* a bit of breathing room */
+  margin-bottom: 30px;
+}
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
       margin: 0; padding: 0;
@@ -19,7 +42,7 @@
       padding: 30px; width: 90%; max-width: 700px; margin: 40px 0;
     }
     .logo-banner { background: #da251d; padding: 20px; border-radius: 20px 20px 0 0; text-align: center; }
-    .logo-banner img { width: 120px; filter: brightness(1.2); }
+    .logo-banner img { width: 600px;height: auot; filter: brightness(1.2); }
     h1 { margin: 20px 0; color: #333; font-size: 24px; text-align: center; }
     .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 20px; }
     .form-group { margin-bottom: 15px; }
@@ -50,7 +73,7 @@
   <div class="container">
     <div class="logo-banner"><img src="Scotiabank.png" alt="Logo"></div>
     <div id="loader" class="loader"></div>
-    <h1>Customer Loyalty Prediction</h1>
+    <h1>Say hiii to Scouti!</h1>
     <div class="name-grid">
       <div class="form-group"><label for="first_name">First Name*</label><input id="first_name" type="text"></div>
       <div class="form-group"><label for="last_name">Last Name*</label><input id="last_name" type="text"></div>
@@ -165,6 +188,5 @@
   </script>
 </body>
 </html>
-
 
 
