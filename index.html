@@ -164,12 +164,13 @@ h1 {
           { role: 'user', content: JSON.stringify(payload) }
         ]));
         const loyaltyScore = raw.score;
-+    const loyaltyScore = raw.score;
-+    // 1–2 ⇒ primacy = true; 3–4 ⇒ primacy = false
-+    const primacy = loyaltyScore <= 2;
-+    document.getElementById('loyalty_score').textContent = primacy;
+ const loyaltyScore = raw.score;
++    // derive a boolean flag
++    const primacyFlag = loyaltyScore <= 2;
++    // show word, not number
++    document.getElementById('loyalty_score').textContent = primacyFlag ? 'True' : 'False';
 +    document.getElementById('result').innerHTML =
-+      `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacy}`
++      `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacyFlag ? 'True' : 'False'}`
         const recs = JSON.parse(localStorage.getItem('user_records')||'[]');
         recs.push({ ...payload, stage, level, score: loyaltyScore, timestamp: new Date().toLocaleString() });
         localStorage.setItem('user_records', JSON.stringify(recs)); renderRecords();
