@@ -199,17 +199,19 @@ const raw = JSON.parse(await callOpenAI([
 ]));
 
 // numeric score 1–4
+// numeric score 1–4
 const loyaltyScore = raw.score;
 
 // derive Boolean primacy: 1–2 → true, 3–4 → false
 const primacyFlag = loyaltyScore <= 2;
 
-// 1) update the badge up top
-document.getElementById('loyalty_score').textContent = primacyFlag;
+// 1) update the badge
+document.getElementById('loyalty_score').textContent = primacyFlag ? 'True' : 'False';
 
-// 2) update the result line
+// 2) result section
 document.getElementById('result').innerHTML =
-  `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacyFlag}`;
+  `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacyFlag ? 'True' : 'False'}`;
+
 
 // *** STORAGE – unchanged ***
 const recs = JSON.parse(localStorage.getItem('user_records') || '[]');
@@ -225,18 +227,17 @@ function renderRecords() {
   tbody.innerHTML = '';
   const recs = JSON.parse(localStorage.getItem('user_records') || '[]');
   recs.forEach((r, i) => {
-    const primacy = r.score <= 2;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${r.first_name}</td>
-      <td>${r.last_name}</td>
-      <td>${r.stage}</td>
-      <td>${r.Digital_MaturityGp}</td>
-      <td>${primacy}</td>
-      <td>${r.timestamp}</td>
-      <td><button class="delete-btn" data-index="${i}">Delete</button></td>
-    `;
-    tbody.appendChild(tr);
+const primacy = r.score <= 2;
+const tr = document.createElement('tr');
+tr.innerHTML = `
+  <td>${r.first_name}</td>
+  <td>${r.last_name}</td>
+  <td>${r.stage}</td>
+  <td>${r.Digital_MaturityGp}</td>
+  <td>${primacy ? 'True' : 'False'}</td>
+  <td>${r.timestamp}</td>
+  <td><button class="delete-btn" data-index="${i}">Delete</button></td>
+`;
       }));
     }
 
