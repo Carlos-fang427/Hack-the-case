@@ -159,21 +159,30 @@ h1 {
           credit_score: parseInt(document.getElementById('credit_score').value)
         };
         // get raw score 1–4 where 1=most loyal,4=least loyal
-        const raw = JSON.parse(await callOpenAI([
-          { role: 'system', content: 'Predict loyalty: given data, return {"score":X} where X is 1..4 (1 most loyal).'},
-          { role: 'user', content: JSON.stringify(payload) }
-        ]));
-        const loyaltyScore = raw.score;
- const loyaltyScore = raw.score;
-+    // derive a boolean flag
-+    const primacyFlag = loyaltyScore <= 2;
-+    // show word, not number
-+    document.getElementById('loyalty_score').textContent = primacyFlag ? 'True' : 'False';
-+    document.getElementById('result').innerHTML =
-+      `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacyFlag ? 'True' : 'False'}`
-        const recs = JSON.parse(localStorage.getItem('user_records')||'[]');
-        recs.push({ ...payload, stage, level, score: loyaltyScore, timestamp: new Date().toLocaleString() });
-        localStorage.setItem('user_records', JSON.stringify(recs)); renderRecords();
+const raw = JSON.parse(await callOpenAI([
+  { role: 'system', content: 'Predict loyalty: given data, return {"score":X} where X is 1..4 (1 most loyal).' },
+  { role: 'user',   content: JSON.stringify(payload) }
+]));
+
+// get numeric score (1–4)
+const loyaltyScore = raw.score;
+
+// derive primacy flag: 1–2 → true, 3–4 → false
+const primacyFlag = loyaltyScore <= 2;
+
+// push only True/False into the badge
+document.getElementById('loyalty_score').textContent =
+  primacyFlag ? 'True' : 'False';
+
+// show True/False in the result area
+document.getElementById('result').innerHTML =
+  `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacyFlag ? 'True' : 'False'}`;
+
+// then save to localStorage as before…
+const recs = JSON.parse(localStorage.getItem('user_records') || '[]');
+recs.push({ ...payload, stage, level, score: loyaltyScore, timestamp: new Date().toLocaleString() });
+localStorage.setItem('user_records', JSON.stringify(recs));
+renderRecords();
       } catch(e) { console.error(e); alert(e.message||e); }
       finally { document.getElementById('loader').style.display = 'none'; document.getElementById('predictBtn').disabled = false; }
     }
