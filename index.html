@@ -113,32 +113,66 @@ h1 {
       return (await res.json()).choices[0].message.content;
     }
 
-    function analyzeRelationship() {
-      const desc = document.getElementById('relationship_desc').value.trim();
-      if (!desc) return Promise.resolve(null);
-      return callOpenAI([
-        { role: 'system', content: 'Classify sentiment: return {"stage":4} if negative, down to {"stage":1} if very positive.' },
-        { role: 'user', content: desc }
-      ]).then(reply => {
-        let { stage } = JSON.parse(reply);
-        // no inversion here: 1=most loyal,4=least loyal
-        document.getElementById('relationship_score').textContent = `Stage ${stage}`;
-        return stage;
-      });
+ async function analyzeRelationship() {
+  const desc = document.getElementById('relationship_desc').value.trim();
+  if (!desc) { 
+    alert('Enter relationship description'); 
+    return Promise.resolve(null); 
+  }
+
+  const systemPrompt = `You are a JSON‑only classifier. 
+Classify engagement into exactly {"stage":X} where X is 1–4 (1=best, 4=worst). 
+Respond **only** with that JSON object and no extra text.`;
+
+  const reply = await callOpenAI([
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: desc }
+  ]);
+
+  // safely parse
+  let data;
+  try {
+    data = JSON.parse(reply);
+  } catch (err) {
+    console.error('Stage parse error:', reply);
+    throw new Error('Invalid JSON from stage analysis');
+  }
+
+  const { stage } = data;
+  document.getElementById('relationship_score').textContent = `Stage ${stage}`;
+  return stage;
+}
     }
 
-    function analyzeMaturity() {
-      const desc = document.getElementById('digital_maturity_desc').value.trim();
-      if (!desc) return Promise.resolve(null);
-      return callOpenAI([
-        { role: 'system', content: 'Classify comfort: return {"level":"High"} if very comfortable, down to {"level":"Low"}.' },
-        { role: 'user', content: desc }
-      ]).then(reply => {
-        const { level } = JSON.parse(reply);
-        document.getElementById('Digital_MaturityGp').textContent = level;
-        return level;
-      });
-    }
+async function analyzeMaturity() {
+  const desc = document.getElementById('digital_maturity_desc').value.trim();
+  if (!desc) { 
+    alert('Enter digital maturity description'); 
+    return Promise.resolve(null); 
+  }
+
+  const systemPrompt = `You are a JSON‑only classifier. 
+Classify digital comfort into exactly {"level":"High"|"Medium"|"Low"}. 
+Respond **only** with that JSON object and no extra text.`;
+
+  const reply = await callOpenAI([
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: desc }
+  ]);
+
+  // safely parse
+  let data;
+  try {
+    data = JSON.parse(reply);
+  } catch (err) {
+    console.error('Maturity parse error:', reply);
+    throw new Error('Invalid JSON from maturity analysis');
+  }
+
+  const { level } = data;
+  document.getElementById('Digital_MaturityGp').textContent = level;
+  return level;
+}
 
     async function predict() {
       const fields = ['first_name','last_name','OccuGp','relationship_desc','digital_maturity_desc','account_age_years','digital_usage','has_card','credit_score'];
