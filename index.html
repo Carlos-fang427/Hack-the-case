@@ -164,21 +164,20 @@ const raw = JSON.parse(await callOpenAI([
   { role: 'user',   content: JSON.stringify(payload) }
 ]));
 
-// get numeric score (1–4)
+// numeric score 1–4
 const loyaltyScore = raw.score;
 
-// derive primacy flag: 1–2 → true, 3–4 → false
+// derive Boolean primacy: 1–2 → true, 3–4 → false
 const primacyFlag = loyaltyScore <= 2;
 
-// push only True/False into the badge
-document.getElementById('loyalty_score').textContent =
-  primacyFlag ? 'True' : 'False';
+// 1) update the badge up top
+document.getElementById('loyalty_score').textContent = primacyFlag;
 
-// show True/False in the result area
+// 2) update the result line
 document.getElementById('result').innerHTML =
-  `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacyFlag ? 'True' : 'False'}`;
+  `<strong>${payload.first_name} ${payload.last_name} Primacy:</strong> ${primacyFlag}`;
 
-// then save to localStorage as before…
+// *** STORAGE – unchanged ***
 const recs = JSON.parse(localStorage.getItem('user_records') || '[]');
 recs.push({ ...payload, stage, level, score: loyaltyScore, timestamp: new Date().toLocaleString() });
 localStorage.setItem('user_records', JSON.stringify(recs));
@@ -187,15 +186,23 @@ renderRecords();
       finally { document.getElementById('loader').style.display = 'none'; document.getElementById('predictBtn').disabled = false; }
     }
 
-    function renderRecords() {
-      const tbody = document.querySelector('#records-table tbody'); tbody.innerHTML = '';
-      JSON.parse(localStorage.getItem('user_records')||'[]').forEach((r,i)=>{
-        const tr = document.createElement('tr'); tr.innerHTML = `<td>${r.first_name}</td><td>${r.last_name}</td><td>${r.relationship}</td><td>${r.Digital_MaturityGp}</td><td>${r.score}</td><td>${r.timestamp}</td><td><button class='delete-btn' data-index='${i}'>Delete</button></td>`;
-        tbody.appendChild(tr);
-      });
-      document.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click', e=>{
-        const idx = +e.target.dataset.index; const arr = JSON.parse(localStorage.getItem('user_records')||'[]'); arr.splice(idx,1);
-        localStorage.setItem('user_records', JSON.stringify(arr)); renderRecords();
+function renderRecords() {
+  const tbody = document.querySelector('#records-table tbody');
+  tbody.innerHTML = '';
+  const recs = JSON.parse(localStorage.getItem('user_records') || '[]');
+  recs.forEach((r, i) => {
+    const primacy = r.score <= 2;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.first_name}</td>
+      <td>${r.last_name}</td>
+      <td>${r.stage}</td>
+      <td>${r.Digital_MaturityGp}</td>
+      <td>${primacy}</td>
+      <td>${r.timestamp}</td>
+      <td><button class="delete-btn" data-index="${i}">Delete</button></td>
+    `;
+    tbody.appendChild(tr);
       }));
     }
 
